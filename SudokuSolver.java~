@@ -1,0 +1,67 @@
+public class SudokuSolver {
+	
+	Sudoku sudoku;
+	
+	public SudokuSolver(Sudoku sudoku) {
+		this.sudoku = sudoku;
+	}
+	
+	public boolean solveRec(Sudoku sudoku, int r, int c) {
+		if (r==9) {
+			r=0;
+			c++;
+			if (c==9) {
+				return true;
+			}
+		}
+		if (sudoku.getValue(r,c) != 0) {
+			return solveRec(sudoku, r+1, c);
+		}
+		for (int k=0; k<9; k++) {
+			if (isPossible(sudoku, r, c, k)) {
+				sudoku.setValue (r, c, k);
+				if (solveRec(sudoku, r+1, c)== true) {
+					return true;
+				}
+			}
+		}
+		sudoku.setValue (r, c, 0);
+		return false;
+	}
+	
+	public int[][] solve() {
+		int[][] solve = new int[9][9];
+		solveRec(sudoku, 0,0);
+		for (int i=0; i<9; i++) {
+			for (int j=0; j<9; j++) {
+				solve[i][j] = sudoku.getValue(i,j);
+			}
+		}
+		return solve;
+	}
+	
+	public boolean isPossible (Sudoku sudoku, int row, int column, int number) {
+		for (int i=0; i<9; i++) {
+			if (sudoku.getValue(row,i)== number) {
+				return false;
+			}
+		}
+		for (int i=0; i<9; i++) {
+			if (sudoku.getValue(i,column)== number) {
+				return false;
+			}
+		}
+		int restr= row%9;
+		int squarer= row/3;
+		int restc= column%9;
+		int squarec= column/3;
+		for (int i=squarer*3; i<squarer+3; i++) {
+			for (int j=squarec*3; j<squarec+3; i++) {
+				if (sudoku.getValue(i,j)==number) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+}
